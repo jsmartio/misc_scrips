@@ -1,0 +1,55 @@
+<script>
+function dec2bin(dec){
+    return (dec >>> 0).toString(2);
+}
+function pad(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+$(function(){
+	$("#aq").click(function(){
+		var rv = "dummy"+$("#jescape").val();
+		var temp = rv.split("\\u");
+	
+    
+    //// case 1 is when there is a surogate pairs
+		if(temp.length == 3){
+			leftNum = parseInt(temp[1], 16);
+			rightNum = parseInt(temp[2], 16);
+			leftNum -= 55296;                   // to strip down the leftmost segment 55296 must be subtracted
+			rightNum -= 56320;                  // to strip down the right most segment 56320 must be subtracted
+			leftNumBin = dec2bin(leftNum);      // convert decimal to binary
+			rightNumBin = dec2bin(rightNum);    
+			rightNumBin = pad(rightNumBin,10);
+			var fullNumBin = ""+leftNumBin+rightNumBin;   // leading quotes ensure that the numbers are concatinated as strings
+			fullNumBin = parseInt(fullNumBin);            // convert concat into numeric value
+			var hexNum = parseInt(fullNumBin,2).toString(16); // get hex equivalent
+			$("#hescape").val("&#x1" + hexNum);           // post to textarea
+			$("#qshow").html("&#x1" + hexNum);            // post to div for preview
+		} else if (temp.length == 2) {
+    
+      ///// case 2 single 4 digit UTF16  value to convert
+			$("#hescape").val("&#x" + temp[1]);
+			$("#qshow").html("&#x" + temp[1]);
+		}
+	});
+});
+</script>
+
+
+<!--- here is the HTML which can be used to display results //-->
+		<form method="post" class="form-inline" id="form1">
+
+			<div class="form-group">
+    			<label for="new_word">Add Emoji</label> &nbsp; 
+    			<input type="text" class="form-control" id="description" placeholder="description" name="description">
+    			<input type="text" class="form-control" id="jescape" placeholder="javascript escape" name="jescape">
+    			<input type="text" class="form-control" id="hescape" placeholder="html escpe" name="hescape">
+    			<button type="submit" class="btn btn-default" id="addw">Submit</button>  &nbsp;  &nbsp; 
+    			<span id="aq" class="btn btn-default">Aquire HTML</span>
+    			<a href="?" class="btn btn-default">Reload page</a><span id="qshow" style="border:1px #ddd solid; padding:3px; margin-left:10px;font-size:30px" ></span>
+    			
+  			</div>
+  			
+		</form>
